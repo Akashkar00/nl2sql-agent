@@ -1,0 +1,54 @@
+# NL2SQL training config — Qwen2.5-Coder-7B + QLoRA on Kaggle T4
+# Tested values. Tune with intent, not vibes.
+
+model:
+  base_model: "unsloth/Qwen2.5-Coder-7B-Instruct-bnb-4bit"
+  max_seq_length: 2048
+  dtype: null    # null = auto (bfloat16 on T4 fallback to fp16)
+  load_in_4bit: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.0
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: "none"
+  use_gradient_checkpointing: "unsloth"   # unsloth's optimized version
+  random_state: 3407
+
+data:
+  train_path: "data/processed/train.jsonl"
+  eval_path: "data/processed/eval_holdout.jsonl"
+  text_field: "text"
+
+training:
+  output_dir: "outputs/qwen-coder-7b-nl2sql"
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4    # effective batch = 16
+  warmup_ratio: 0.03
+  num_train_epochs: 2
+  learning_rate: 2.0e-4
+  lr_scheduler_type: "cosine"
+  optim: "adamw_8bit"
+  weight_decay: 0.01
+  logging_steps: 10
+  save_steps: 500
+  save_total_limit: 2
+  bf16: false   # T4 doesn't support bf16
+  fp16: true
+  seed: 3407
+
+hub:
+  push_to_hub: true
+  hub_strategy: "every_save"   # adapter pushed each save_steps — survives Kaggle disconnect
+
+wandb:
+  project: "nl2sql-agent"
+  run_name: "qwen-coder-7b-qlora-r16-bird-spider"

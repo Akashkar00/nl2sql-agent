@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.local
+
+# Datasets — too large for git
+data/spider/
+data/bird/
+data/processed/
+*.sqlite
+*.db
+
+# Model artifacts — push to HF Hub instead
+adapters/
+checkpoints/
+*.bin
+*.safetensors
+wandb/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+.antigravity/
+
+# OS
+.DS_Store
+._*
+Thumbs.db
+
+# Kaggle
+kaggle.json
